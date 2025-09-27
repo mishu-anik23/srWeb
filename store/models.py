@@ -5,8 +5,8 @@ from django.urls import reverse
 
 
 class Category(MPTTModel):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)  # Remove unique=True
+    slug = models.SlugField(max_length=100, unique=True)  # Keep slug unique
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
@@ -17,12 +17,11 @@ class Category(MPTTModel):
 
     class Meta:
         verbose_name_plural = "Categories"
+        # Add unique together constraint for name and parent
+        unique_together = ['name', 'parent']
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return reverse('products_by_category', args=[self.slug])
 
 
 class Product(models.Model):

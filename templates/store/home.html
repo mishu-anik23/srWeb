@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5>Categories</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for category in categories %}
+                        <li class="mb-2">
+                            <a href="{% url 'store:category_products' category.slug %}" 
+                               class="text-decoration-none">
+                                <i class="fas fa-folder"></i> {{ category.name }}
+                            </a>
+                            {% if category.get_children %}
+                                <ul class="list-unstyled ms-3">
+                                    {% for child in category.get_children %}
+                                        <li>
+                                            <a href="{% url 'store:category_products' child.slug %}" 
+                                               class="text-decoration-none small">
+                                                {{ child.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <h2>Featured Products</h2>
+        <div class="row">
+            {% for product in featured_products %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ product.name }}</h6>
+                            <p class="card-text text-success">${{ product.price }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No featured products available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

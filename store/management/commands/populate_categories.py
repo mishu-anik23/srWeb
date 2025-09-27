@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.text import slugify
 from store.models import Category
 
 
@@ -93,7 +94,7 @@ class Command(BaseCommand):
                 "Fish & Meat",
                 "Vegetables"
             ],
-            "Vegetables": None,  # Will be a main category with no subcategories
+            "Vegetables": None,
             "Homemade Snacks": [
                 "Sweets Variant",
                 "Spicy Snacks"
@@ -102,38 +103,84 @@ class Command(BaseCommand):
 
         # Clear existing categories
         Category.objects.all().delete()
+        self.stdout.write("Cleared existing categories...")
+
+        # Helper function to create unique slugs
+        def get_unique_slug(base_slug, parent=None):
+            slug = base_slug
+            counter = 1
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            return slug
 
         # Create categories
         for main_cat_name, sub_data in categories_data.items():
+            main_slug = slugify(main_cat_name)
+            main_slug = get_unique_slug(main_slug)
+
             main_category, created = Category.objects.get_or_create(
                 name=main_cat_name,
-                slug=main_cat_name.lower().replace(' ', '-')
+                defaults={'slug': main_slug}
             )
+
+            self.stdout.write(f"Created main category: {main_cat_name}")
 
             if sub_data is not None:
                 if isinstance(sub_data, dict):  # Has subcategories
                     for sub_cat_name, product_types in sub_data.items():
+                        sub_slug = slugify(sub_cat_name)
+                        sub_slug = get_unique_slug(sub_slug, main_category)
+
                         sub_category, created = Category.objects.get_or_create(
                             name=sub_cat_name,
-                            slug=sub_cat_name.lower().replace(' ', '-'),
-                            parent=main_category
+                            parent=main_category,
+                            defaults={'slug': sub_slug}
                         )
 
+                        self.stdout.write(f"  └── Created subcategory: {sub_cat_name}")
+
                         for product_type_name in product_types:
+                            type_slug = slugify(product_type_name)
+                            type_slug = get_unique_slug(type_slug, sub_category)
+
                             Category.objects.get_or_create(
                                 name=product_type_name,
-                                slug=product_type_name.lower().replace(' ', '-'),
-                                parent=sub_category
+                                parent=sub_category,
+                                defaults={'slug': type_slug}
                             )
+
+                            self.stdout.write(f"      └── Created product type: {product_type_name}")
 
                 elif isinstance(sub_data, list):  # Direct product types under main category
                     for product_type_name in sub_data:
+                        type_slug = slugify(product_type_name)
+                        type_slug = get_unique_slug(type_slug, main_category)
+
                         Category.objects.get_or_create(
                             name=product_type_name,
-                            slug=product_type_name.lower().replace(' ', '-'),
-                            parent=main_category
+                            parent=main_category,
+                            defaults={'slug': type_slug}
                         )
 
+                        self.stdout.write(f"  └── Created product type: {product_type_name}")
+
+        # Display the category tree
+        self.stdout.write("\n" + "=" * 50)
+        self.stdout.write("Category Tree Created:")
+        self.stdout.write("=" * 50)
+
+        root_categories = Category.objects.filter(level=0)
+        for category in root_categories:
+            self.stdout.write(f"• {category.name}")
+            for child in category.get_children():
+                self.stdout.write(f"  └── {child.name}")
+                for grandchild in child.get_children():
+                    self.stdout.write(f"      └── {grandchild.name}")
+
         self.stdout.write(
-            self.style.SUCCESS('Successfully populated categories!')
+            self.style.SUCCESS('\nSuccessfully populated categories!')
+        )
+        self.stdout.write(
+            self.style.SUCCESS(f'Total categories created: {Category.objects.count()}')
         )

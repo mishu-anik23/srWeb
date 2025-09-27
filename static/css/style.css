@@ -1,0 +1,40 @@
+/* Basic styling for Sunrise Supermarkt */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.product-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.category-tree {
+    list-style: none;
+    padding-left: 0;
+}
+
+.category-tree li {
+    margin-bottom: 5px;
+}
+
+.category-tree a {
+    text-decoration: none;
+    color: #333;
+}
+
+.category-tree a:hover {
+    color: #28a745;
+}
