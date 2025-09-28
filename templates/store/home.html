@@ -1,56 +1,101 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5>Categories</h5>
+<!-- Hero Section -->
+<section class="hero-section bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-success">Welcome to Sunrise Supermarkt</h1>
+                <p class="lead">Your premium destination for authentic South Asian, Asian, African & Oriental groceries, exotic fruits, and fresh vegetables.</p>
+                <a href="{% url 'store:product_list' %}" class="btn btn-success btn-lg">Shop Now</a>
+                <a href="#" class="btn btn-outline-success btn-lg">Wholesale Inquiry</a>
             </div>
-            <div class="card-body">
-                <ul class="list-unstyled">
-                    {% for category in categories %}
-                        <li class="mb-2">
-                            <a href="{% url 'store:category_products' category.slug %}" 
-                               class="text-decoration-none">
-                                <i class="fas fa-folder"></i> {{ category.name }}
-                            </a>
-                            {% if category.get_children %}
-                                <ul class="list-unstyled ms-3">
-                                    {% for child in category.get_children %}
-                                        <li>
-                                            <a href="{% url 'store:category_products' child.slug %}" 
-                                               class="text-decoration-none small">
-                                                {{ child.name }}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+            <div class="col-lg-6">
+                <img src="{% static 'images/hero-banner.jpg' %}" alt="Sunrise Supermarkt" class="img-fluid rounded shadow">
             </div>
         </div>
     </div>
-    
-    <div class="col-md-9">
-        <h2>Featured Products</h2>
+</section>
+
+<!-- Featured Categories -->
+<section class="categories-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Shop by Category</h2>
         <div class="row">
-            {% for product in featured_products %}
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.name }}">
-                        <div class="card-body">
-                            <h6 class="card-title">{{ product.name }}</h6>
-                            <p class="card-text text-success">${{ product.price }}</p>
+            {% for category in categories %}
+            <div class="col-md-3 mb-4">
+                <div class="card category-card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="category-icon mb-3">
+                            <i class="fas fa-utensils fa-2x text-success"></i>
                         </div>
+                        <h5 class="card-title">{{ category.name }}</h5>
+                        <a href="{% url 'store:category_products' category.slug %}" class="btn btn-outline-success btn-sm">Explore</a>
                     </div>
                 </div>
-            {% empty %}
-                <p>No featured products available.</p>
+            </div>
             {% endfor %}
         </div>
     </div>
-</div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-products py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Featured Products</h2>
+            <a href="{% url 'store:product_list' %}" class="btn btn-outline-success">View All</a>
+        </div>
+        <div class="row">
+            {% for product in featured_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                {% include 'store/partials/product_card.html' %}
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No featured products available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Bestseller Products -->
+<section class="bestseller-products py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Best Selling Products</h2>
+            <a href="{% url 'store:product_list' %}?sort_by=bestseller" class="btn btn-outline-success">View All</a>
+        </div>
+        <div class="row">
+            {% for product in bestseller_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                {% include 'store/partials/product_card.html' %}
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No bestseller products available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section bg-success text-white py-5">
+    <div class="container text-center">
+        <h3>Stay Updated</h3>
+        <p>Subscribe to our newsletter for latest offers and new products</p>
+        <form class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="email" class="form-control" placeholder="Enter your email">
+                    <button class="btn btn-light" type="submit">Subscribe</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
 {% endblock %}
