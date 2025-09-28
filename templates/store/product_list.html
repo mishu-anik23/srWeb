@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Products - Sunrise Supermarkt{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Categories Filter -->
+                    <h6>Categories</h6>
+                    <div class="mb-3">
+                        {% for category in categories %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{ category.slug }}" id="cat-{{ category.slug }}">
+                            <label class="form-check-label" for="cat-{{ category.slug }}">
+                                {{ category.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price Filter -->
+                    <h6>Price Range</h6>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" placeholder="Min" name="min_price">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" placeholder="Max" name="max_price">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success btn-sm w-100">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>All Products</h2>
+                    <p class="text-muted mb-0">{{ total_products }} products found</p>
+                </div>
+                <div>
+                    <select class="form-select form-select-sm" onchange="location = this.value;">
+                        <option value="?sort_by=name">Sort by Name</option>
+                        <option value="?sort_by=price_low">Price: Low to High</option>
+                        <option value="?sort_by=price_high">Price: High to Low</option>
+                        <option value="?sort_by=newest">Newest First</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                {% for product in page_obj %}
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    {% include 'store/partials/product_card.html' %}
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No products found</h4>
+                    <p class="text-muted">Try adjusting your search or filters</p>
+                    <a href="{% url 'store:product_list' %}" class="btn btn-success">Clear Filters</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

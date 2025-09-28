@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Sunrise Supermarkt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'store:category_products' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-lg-6">
+            <div class="product-gallery">
+                <div class="main-image mb-3">
+                    <img src="{{ product.main_image.url }}" class="img-fluid rounded" alt="{{ product.name }}" id="mainImage">
+                </div>
+                {% if product_images %}
+                <div class="image-thumbnails">
+                    <div class="row">
+                        {% for image in product_images %}
+                        <div class="col-3">
+                            <img src="{{ image.image.url }}" class="img-fluid thumbnail rounded" alt="{{ image.alt_text }}" 
+                                 onclick="changeMainImage('{{ image.image.url }}')">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <p class="text-muted">SKU: {{ product.sku }}</p>
+            
+            <div class="rating mb-3">
+                <span class="text-warning">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </span>
+                <span class="text-muted">(24 reviews)</span>
+            </div>
+
+            <div class="price-section mb-4">
+                <h2 class="text-success">${{ product.price }}</h2>
+                {% if product.wholesale_price %}
+                <p class="text-muted">Wholesale Price: <strong>${{ product.wholesale_price }}</strong> (Min. {{ product.wholesale_min_quantity }} items)</p>
+                {% endif %}
+            </div>
+
+            <div class="product-details mb-4">
+                <p>{{ product.description }}</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><strong>Brand:</strong> {{ product.brand }}</li>
+                            <li><strong>Origin:</strong> {{ product.origin_country }}</li>
+                            <li><strong>Weight:</strong> {{ product.weight }}{{ product.weight_unit }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            {% if product.is_halal %}<li><span class="badge bg-success">Halal Certified</span></li>{% endif %}
+                            {% if product.is_vegetarian %}<li><span class="badge bg-success">Vegetarian</span></li>{% endif %}
+                            <li><strong>Stock:</strong> {{ product.stock_quantity }} available</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add to Cart -->
+            <div class="cart-section">
+                <form class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="quantity" class="form-label">Quantity:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" class="form-control" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}" style="width: 80px;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Product Meta -->
+            <div class="product-meta mt-4 pt-4 border-top">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <i class="fas fa-shipping-fast text-success mb-2"></i>
+                        <p class="small mb-0">Free Shipping</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="fas fa-undo-alt text-success mb-2"></i>
+                        <p class="small mb-0">Easy Returns</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="fas fa-shield-alt text-success mb-2"></i>
+                        <p class="small mb-0">Quality Guarantee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <section class="related-products mt-5 pt-5 border-top">
+        <h3 class="mb-4">Related Products</h3>
+        <div class="row">
+            {% for product in related_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                {% include 'store/partials/product_card.html' %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeMainImage(imageUrl) {
+    document.getElementById('mainImage').src = imageUrl;
+}
+</script>
+{% endblock %}
