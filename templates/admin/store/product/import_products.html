@@ -1,0 +1,46 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="content-main">
+    <h1>Import Products</h1>
+    
+    <div class="module">
+        <div style="margin-bottom: 20px;">
+            <h2>Instructions</h2>
+            <ul>
+                <li>Download the template first to see the required format</li>
+                <li>Supported formats: CSV, Excel (.xlsx)</li>
+                <li>Make sure category names match exactly with existing categories</li>
+                <li>Required fields: name, price, category</li>
+            </ul>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div style="margin-bottom: 15px;">
+                <label for="file_format">File Format:</label>
+                <select name="format" id="file_format" style="margin-left: 10px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="file">Select File:</label>
+                <input type="file" name="file" id="file" accept=".csv,.xlsx" required style="margin-left: 10px;">
+            </div>
+            
+            <div>
+                <input type="submit" value="Import Products" class="default" style="background: #417690; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                <a href="{% url 'admin:store_product_download_template' %}" class="button" style="background: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: 10px;">
+                    Download Template
+                </a>
+                <a href="../" class="button" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: 10px;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
