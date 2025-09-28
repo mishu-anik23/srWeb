@@ -174,7 +174,7 @@ class ProductImportExportAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ProductImportExportAdmin):
-    list_display = ['name', 'sku', 'category', 'price', 'stock_quantity', 'is_available']
+    list_display = ['name', 'sku', 'category', 'brand', 'price', 'stock_quantity', 'is_available']
     list_filter = ['is_available', 'category', 'product_type', 'origin_country']
     search_fields = ['name', 'sku', 'brand']
     prepopulated_fields = {'slug': ('name',)}
