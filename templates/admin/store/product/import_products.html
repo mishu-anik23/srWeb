@@ -12,28 +12,39 @@
                 <li>Download the template first to see the required format</li>
                 <li>Supported formats: CSV, Excel (.xlsx)</li>
                 <li>Make sure category names match exactly with existing categories</li>
-                <li>Required fields: name, price, category</li>
+                <li>Required fields: <strong>name, price, category</strong></li>
+                <li>Optional fields: slug, description, wholesale_price, brand, origin_country, weight, stock_quantity</li>
+                <li>Boolean fields (is_available, is_wholesale, is_halal, is_vegetarian): Use "True" or "False"</li>
             </ul>
+
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                <h4>Available Categories:</h4>
+                <div style="column-count: 3;">
+                    {% for category in categories %}
+                    <code>{{ category.name }}</code><br>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div style="margin-bottom: 15px;">
-                <label for="file_format">File Format:</label>
-                <select name="format" id="file_format" style="margin-left: 10px;">
+                <label for="file_format"><strong>File Format:</strong></label>
+                <select name="format" id="file_format" style="margin-left: 10px; padding: 5px;">
                     <option value="csv">CSV</option>
-                    <option value="excel">Excel</option>
+                    <option value="excel">Excel (.xlsx)</option>
                 </select>
             </div>
-            
+
             <div style="margin-bottom: 15px;">
-                <label for="file">Select File:</label>
+                <label for="file"><strong>Select File:</strong></label>
                 <input type="file" name="file" id="file" accept=".csv,.xlsx" required style="margin-left: 10px;">
             </div>
-            
-            <div>
+
+            <div style="margin-top: 25px;">
                 <input type="submit" value="Import Products" class="default" style="background: #417690; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                <a href="{% url 'admin:store_product_download_template' %}" class="button" style="background: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: 10px;">
+                <a href="download-template/" class="button" style="background: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: 10px;">
                     Download Template
                 </a>
                 <a href="../" class="button" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: 10px;">

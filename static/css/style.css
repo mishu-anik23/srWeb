@@ -1,40 +1,116 @@
-/* Basic styling for Sunrise Supermarkt */
+/* Custom Styles for Sunrise Supermarkt */
+:root {
+    --primary-color: #28a745;
+    --secondary-color: #20c997;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+}
+
+/* General Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
 }
 
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-.card {
-    transition: transform 0.2s;
+/* Category Cards */
+.category-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
 }
 
-.card:hover {
+.category-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.category-icon {
+    color: var(--primary-color);
+}
+
+/* Product Cards */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
 .product-image {
     height: 200px;
     object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
-.category-tree {
-    list-style: none;
-    padding-left: 0;
+.product-card:hover .product-image {
+    transform: scale(1.05);
 }
 
-.category-tree li {
-    margin-bottom: 5px;
+/* Product Gallery */
+.thumbnail {
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    height: 80px;
+    object-fit: cover;
 }
 
-.category-tree a {
-    text-decoration: none;
-    color: #333;
+.thumbnail:hover {
+    opacity: 0.7;
 }
 
-.category-tree a:hover {
-    color: #28a745;
+/* Navigation */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.7rem;
+}
+
+/* Buttons */
+.btn-success {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+
+    .product-image {
+        height: 150px;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
