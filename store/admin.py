@@ -79,14 +79,17 @@ class ProductImportExportAdmin(admin.ModelAdmin):
         response['Content-Disposition'] = 'attachment; filename="products_export.csv"'
 
         writer = csv.writer(response)
+
+        # Updated header row to match your actual model fields
         writer.writerow([
             'name', 'slug', 'description', 'price', 'wholesale_price',
             'category', 'product_type', 'brand', 'origin_country',
-            'weight', 'stock_quantity', 'is_available', 'is_wholesale',
-            'is_halal', 'is_vegetarian'
+            'weight', 'weight_unit', 'stock_quantity', 'is_available',
+            'is_wholesale_available', 'is_halal', 'is_vegetarian',
+            'is_featured', 'is_bestseller', 'sku'
         ])
 
-        products = Product.objects.all()
+        products = Product.objects.all().select_related('category')
         for product in products:
             writer.writerow([
                 product.name,
@@ -99,11 +102,15 @@ class ProductImportExportAdmin(admin.ModelAdmin):
                 product.brand,
                 product.origin_country,
                 product.weight,
+                product.weight_unit,
                 product.stock_quantity,
                 product.is_available,
-                product.is_wholesale,
+                product.is_wholesale_available,  # Updated field name
                 product.is_halal,
                 product.is_vegetarian,
+                product.is_featured,
+                product.is_bestseller,
+                product.sku,
             ])
 
         return response
@@ -114,15 +121,16 @@ class ProductImportExportAdmin(admin.ModelAdmin):
 
         writer = csv.writer(response)
 
-        # Header row
+        # Updated header to match actual model fields
         writer.writerow([
             'name', 'slug', 'description', 'price', 'wholesale_price',
             'category', 'product_type', 'brand', 'origin_country',
-            'weight', 'stock_quantity', 'is_available', 'is_wholesale',
-            'is_halal', 'is_vegetarian'
+            'weight', 'weight_unit', 'stock_quantity', 'is_available',
+            'is_wholesale_available', 'is_halal', 'is_vegetarian',
+            'is_featured', 'is_bestseller'
         ])
 
-        # Example rows with actual categories from your database
+        # Get some actual categories for examples
         categories = Category.objects.all()[:3]
         for i, category in enumerate(categories):
             writer.writerow([
@@ -131,16 +139,19 @@ class ProductImportExportAdmin(admin.ModelAdmin):
                 f'Description for example product {i + 1}',
                 '10.99',
                 '8.99',
-                category.name,  # Use actual category name
+                category.name,
                 'grocery',
                 'Example Brand',
                 'India',
-                '500g',
+                '500',
+                'g',  # weight unit
                 '100',
                 'True',
                 'True',
                 'True',
-                'True'
+                'True',
+                'False',
+                'False'
             ])
 
         return response
@@ -168,6 +179,14 @@ class ProductImportExportAdmin(admin.ModelAdmin):
                 slug = f"{original_slug}-{counter}"
                 counter += 1
 
+            # Handle boolean fields with defaults
+            is_available = data.get('is_available', 'True').lower() == 'true'
+            is_wholesale_available = data.get('is_wholesale_available', 'False').lower() == 'true'
+            is_halal = data.get('is_halal', 'False').lower() == 'true'
+            is_vegetarian = data.get('is_vegetarian', 'False').lower() == 'true'
+            is_featured = data.get('is_featured', 'False').lower() == 'true'
+            is_bestseller = data.get('is_bestseller', 'False').lower() == 'true'
+
             # Create product
             product, created = Product.objects.get_or_create(
                 slug=slug,
@@ -181,11 +200,14 @@ class ProductImportExportAdmin(admin.ModelAdmin):
                     'origin_country': data.get('origin_country', '').strip(),
                     'brand': data.get('brand', '').strip(),
                     'weight': data.get('weight', '').strip(),
+                    'weight_unit': data.get('weight_unit', 'g'),
                     'stock_quantity': int(data.get('stock_quantity', 0)),
-                    'is_available': data.get('is_available', 'True').lower() == 'true',
-                    'is_wholesale_available': data.get('is_wholesale', 'False').lower() == 'true',
-                    'is_halal': data.get('is_halal', 'False').lower() == 'true',
-                    'is_vegetarian': data.get('is_vegetarian', 'False').lower() == 'true',
+                    'is_available': is_available,
+                    'is_wholesale_available': is_wholesale_available,
+                    'is_halal': is_halal,
+                    'is_vegetarian': is_vegetarian,
+                    'is_featured': is_featured,
+                    'is_bestseller': is_bestseller,
                 }
             )
 
