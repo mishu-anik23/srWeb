@@ -21,13 +21,93 @@ $(document).ready(function() {
     });
 
     // Add to cart animation
-    $('.btn-add-to-cart').click(function(e) {
-        e.preventDefault();
-        const button = $(this);
-        const originalText = button.html();
+    // Cart functionality
+    $(document).ready(function() {
+        // Add to cart with AJAX
+        $('.add-to-cart-form').on('submit', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const button = form.find('.add-to-cart-btn');
+            const originalText = button.html();
 
-        button.html('<span class="loading"></span> Adding...');
-        button.prop('disabled', true);
+            button.prop('disabled', true);
+            button.html('<span class="loading-spinner"></span> Adding...');
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        button.html('<i class="fas fa-check me-2"></i>Added!');
+                        updateCartSummary(response.cart_summary);
+                        showToast('Product added to cart!', 'success');
+                    } else {
+                        button.html(originalText);
+                        button.prop('disabled', false);
+                        showToast(response.message, 'error');
+                    }
+                },
+                error: function() {
+                    button.html(originalText);
+                    button.prop('disabled', false);
+                    showToast('Error adding product to cart', 'error');
+                }
+            });
+        });
+
+        // Update cart summary in navigation
+        function updateCartSummary(summary) {
+            $('.cart-count').text(summary.total_items);
+
+            // Update cart dropdown if open
+            const cartDropdown = $('#cartDropdown');
+            if (cartDropdown.next('.dropdown-menu').is(':visible')) {
+                // You might want to refresh the cart dropdown content here
+                // For now, we'll just update the count
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            // Simple toast implementation
+            const toast = $(`
+                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 position-fixed top-0 end-0 m-3" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">${message}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(toast);
+            const bsToast = new bootstrap.Toast(toast[0]);
+            bsToast.show();
+
+            toast.on('hidden.bs.toast', function() {
+                $(this).remove();
+            });
+        }
+
+        // Quantity input controls
+        $('.quantity-plus').click(function() {
+            const input = $(this).siblings('input[type="number"]');
+            const max = parseInt(input.attr('max'));
+            let value = parseInt(input.val()) + 1;
+            if (value <= max) {
+                input.val(value);
+            }
+        });
+
+        $('.quantity-minus').click(function() {
+            const input = $(this).siblings('input[type="number"]');
+            const min = parseInt(input.attr('min'));
+            let value = parseInt(input.val()) - 1;
+            if (value >= min) {
+                input.val(value);
+            }
+        });
+    });
 
         // Simulate API call
         setTimeout(function() {

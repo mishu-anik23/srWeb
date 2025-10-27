@@ -66,6 +66,70 @@ body {
     opacity: 0.7;
 }
 
+/* Cart Styles */
+.cart-item {
+    transition: background-color 0.2s ease;
+}
+
+.cart-item:hover {
+    background-color: #f8f9fa;
+}
+
+.quantity-selector .btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-selector input {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+.empty-cart {
+    padding: 3rem 0;
+}
+
+.add-to-cart-btn {
+    transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Cart dropdown */
+.dropdown-menu-cart {
+    min-width: 320px;
+}
+
+.cart-count {
+    font-size: 0.7rem;
+    position: relative;
+    top: -8px;
+    left: -5px;
+}
+
+/* Loading animation for AJAX */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #28a745;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Navigation */
 .navbar-brand {
     font-weight: 700;

@@ -61,12 +61,50 @@
 
                 <!-- Cart & User -->
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-shopping-cart"></i> Cart
-                            <span class="badge bg-danger">0</span>
-                        </a>
+                    <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    {% if cart_summary.total_items > 0 %}
+                    <span class="badge bg-danger cart-count">{{ cart_summary.total_items }}</span>
+                    {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown" style="width: 300px;">
+                    {% if cart.is_empty %}
+                    <li class="px-3 py-2">
+                        <small class="text-muted">Your cart is empty</small>
                     </li>
+                    {% else %}
+                    <li class="px-3 py-2">
+                        <small class="text-muted">{{ cart_summary.total_items }} items</small>
+                    </li>
+                    {% for item in cart %}
+                    <li>
+                        <div class="d-flex align-items-center px-3 py-2">
+                            <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}"
+                                 class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <small class="d-block">{{ item.product.name|truncatewords:3 }}</small>
+                                <small class="text-muted">{{ item.quantity }} × €{{ item.price }}</small>
+                            </div>
+                            <small class="text-success">€{{ item.total_price }}</small>
+                        </div>
+                    </li>
+                    {% endfor %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="px-3 py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Total:</strong>
+                            <strong class="text-success">€{{ cart.get_total_price }}</strong>
+                        </div>
+                    </li>
+                    <li class="px-3 py-2">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'store:cart_detail' %}" class="btn btn-success btn-sm">View Cart</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+                </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="fas fa-user"></i> Account

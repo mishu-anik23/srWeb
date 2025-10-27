@@ -11,8 +11,10 @@ def categories(request):
 
 def cart(request):
     """
-    Context processor to make cart available in all templates
+    Make cart available in all templates.
     """
+    cart = Cart(request)
     return {
-        'cart': Cart(request)
+        'cart': cart,
+        'cart_summary': cart.get_summary()
     }
